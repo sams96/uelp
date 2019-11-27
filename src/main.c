@@ -17,20 +17,21 @@
 */
 
 #include <stdlib.h>
+
 #include <gtk/gtk.h>
 
 static void activate (GtkApplication * app, gpointer user_data)
 {
 	GtkWidget * window;
 
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;
-	GtkListStore *store; 
-	GtkWidget *list;
+	GtkCellRenderer * renderer;
+	GtkTreeViewColumn * column;
+	GtkListStore * store;
+	GtkWidget * list;
 
-	GtkWidget *box;
-	GtkWidget *label;
-	GtkTreeSelection *selection;
+	GtkWidget * box;
+	GtkWidget * label;
+	GtkTreeSelection * selection;
 
 	store = gtk_list_store_new(1, G_TYPE_UINT);
 
@@ -39,8 +40,8 @@ static void activate (GtkApplication * app, gpointer user_data)
 
 	/* Create column with cell renderer */
 	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes("ID",
-		  renderer, "text", 0, NULL);
+	column = gtk_tree_view_column_new_with_attributes("ID", renderer, "text", 0,
+			NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
@@ -48,7 +49,7 @@ static void activate (GtkApplication * app, gpointer user_data)
 	g_object_unref(store);
 
 	gtk_window_set_title(GTK_WINDOW(window), "uelp");
-	gtk_window_set_default_size(GTK_WINDOW(window), 640, 480);
+	gtk_window_set_default_size(GTK_WINDOW(window), 960, 720);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), FALSE);
@@ -67,7 +68,7 @@ static void activate (GtkApplication * app, gpointer user_data)
 
 int main (int argc, char * argv[])
 {
-	GtkApplication *app;
+	GtkApplication * app;
 	int status;
 
 	app = gtk_application_new("com.github.sams96.uelp", G_APPLICATION_FLAGS_NONE);
