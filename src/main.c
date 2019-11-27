@@ -19,6 +19,19 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
+#include <sqlite3.h>
+
+static char * default_db = "books.db";
+
+int db_add_item_to_gtk_store_callback (void * model, int argc, char ** argv,
+		char **azColName)
+{
+	GtkTreeIter i;
+	gtk_list_store_append(GTK_LIST_STORE(model), &i);
+	gtk_list_store_set(GTK_LIST_STORE(model), &i, 0, argv[0], -1);
+
+	return 0;
+}
 
 static void activate (GtkApplication * app, gpointer user_data)
 {
@@ -33,7 +46,47 @@ static void activate (GtkApplication * app, gpointer user_data)
 	GtkWidget * label;
 	GtkTreeSelection * selection;
 
+	sqlite3 * db;
+	char * error_msg;
+	int status;
+
+	/* Open DB */
 	store = gtk_list_store_new(1, G_TYPE_UINT);
+	status = sqlite3_open(default_db, &db);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot open database, SQL error: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		exit(status);
+	}
+
+	/* Create table if it doesn't already exist */
+	status = sqlite3_exec(db,
+			"CREATE TABLE IF NOT EXISTS Books(Id INT PRIMARY KEY)",
+			0, 0, &error_msg);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot create table, SQL error: %s\n", error_msg);
+
+		sqlite3_free(error_msg);
+		sqlite3_close(db);
+		exit(status);
+	}
+
+	/* Load database into GTK store */
+	status = sqlite3_exec(db, "SELECT * FROM Books",
+			db_add_item_to_gtk_store_callback, store, &error_msg);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot query database, SQL error: %s\n", error_msg);
+
+		sqlite3_free(error_msg);
+		sqlite3_close(db);
+		exit(status);
+	}
+
+	sqlite3_close(db);
 
 	window = gtk_application_window_new(app);
 	list = gtk_tree_view_new();
