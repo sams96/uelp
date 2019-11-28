@@ -33,11 +33,13 @@ int main (int argc, char * argv[])
 
 	sqlite3 * db;
 	char * error_msg;
+	char * db_fn = (char *) default_db;
 
 	static struct option long_options[] = {
-		{"version", 	no_argument, 	0, 	'V'},
-		{"help", 		no_argument, 	0, 	'h'},
-		{0, 			0, 				0, 	0}
+		{"database", 	required_argument, 	0, 	'd'},
+		{"version", 	no_argument, 		0, 	'V'},
+		{"help", 		no_argument, 		0, 	'h'},
+		{0, 			0, 					0, 	0}
 	};
 
 	if (argc == 1)
@@ -48,12 +50,16 @@ int main (int argc, char * argv[])
 	while (optind < argc) {
 		if ((opt = getopt_long(argc, argv, "V", long_options, &opt)) != -1) {
 			switch (opt) {
+				case 'd':
+					db_fn = optarg;
+					break;
 				case 'V':
 					printf("%s %s\n", prog_name, version_string);
 					break;
 				case 'h':
 					printf("Usage: &s [OPTION]... [FILE]...\
 							\nOptions:\
+							\n\t-d,\t--database\tUse a different database file\
 							\n\t-V,\t--version\tDisplay program version\
 							\n\t-h,\t--help\tDisplay this message\
 							\n", prog_name);
