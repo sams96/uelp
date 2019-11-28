@@ -17,18 +17,52 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#include <gtk/gtk.h>
 #include <sqlite3.h>
+#include <getopt.h>
 
-static char * default_db = "books.db";
+const char * default_db = "books.db";
+const char * version_string = "v0.0";
+const char * prog_name = "uelp";
 
 int main (int argc, char * argv[])
 {
-	char * error_msg;
-	int status;
+	int status = 0;
+	int opt;
 
 	sqlite3 * db;
+	char * error_msg;
+
+	static struct option long_options[] = {
+		{"version", 	no_argument, 	0, 	'V'},
+		{"help", 		no_argument, 	0, 	'h'},
+		{0, 			0, 				0, 	0}
+	};
+
+	if (argc == 1)
+		printf("Usage: %s [OPTION]...\
+				\nTry '%s --help' for more information.\n",
+				prog_name, prog_name);
+
+	while (optind < argc) {
+		if ((opt = getopt_long(argc, argv, "V", long_options, &opt)) != -1) {
+			switch (opt) {
+				case 'V':
+					printf("%s %s\n", prog_name, version_string);
+					break;
+				case 'h':
+					printf("Usage: &s [OPTION]... [FILE]...\
+							\nOptions:\
+							\n\t-V,\t--version\tDisplay program version\
+							\n\t-h,\t--help\tDisplay this message\
+							\n", prog_name);
+					break;
+			}
+		} else {
+			optind++;
+		}
+	}
 
 	/* Open DB */
 	status = sqlite3_open(default_db, &db);
