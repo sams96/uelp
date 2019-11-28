@@ -26,6 +26,29 @@ const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";
 
+int print_entry (void * none, int colc, char ** colv, char **azcolname)
+{
+	for (int i = 0; i < colc; i++)
+		printf("%s\t", colv[i]);
+
+	printf("\n");
+
+	return 0;
+}
+
+int print_db (sqlite3 * db)
+{
+	int status = 0;
+	char * error_msg;
+
+	status = sqlite3_exec(db, "SELECT * FROM Books", print_entry, 0, &error_msg);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot query database, SQL error: %s\n", error_msg);
+		return status;
+	}
+}
+
 int main (int argc, char * argv[])
 {
 	int status = 0;
@@ -35,8 +58,11 @@ int main (int argc, char * argv[])
 	char * error_msg;
 	char * db_fn = (char *) default_db;
 
+	int print_the_db = 0;
+
 	static struct option long_options[] = {
 		{"database", 	required_argument, 	0, 	'd'},
+		{"print", 		no_argument, 		0, 	'p'},
 		{"version", 	no_argument, 		0, 	'V'},
 		{"help", 		no_argument, 		0, 	'h'},
 		{0, 			0, 					0, 	0}
@@ -53,6 +79,9 @@ int main (int argc, char * argv[])
 				case 'd':
 					db_fn = optarg;
 					break;
+				case 'p':
+					print_the_db = 1;
+					break;
 				case 'V':
 					printf("%s %s\n", prog_name, version_string);
 					break;
@@ -65,8 +94,6 @@ int main (int argc, char * argv[])
 							\n", prog_name);
 					break;
 			}
-		} else {
-			optind++;
 		}
 	}
 
@@ -95,6 +122,8 @@ int main (int argc, char * argv[])
 		sqlite3_close(db);
 		exit(status);
 	}
+
+	if (print_the_db) print_db(db);
 
 	sqlite3_close(db);
 
