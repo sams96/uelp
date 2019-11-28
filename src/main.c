@@ -18,9 +18,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <sqlite3.h>
 #include <getopt.h>
+
+#include "book.h"
 
 const char * default_db = "books.db";
 const char * version_string = "v0.0";
@@ -43,15 +46,41 @@ int print_db (sqlite3 * db)
 	int status = 0;
 	char * error_msg;
 
-	printf("ID\tTitle\tAuthor\n");
+	printf("ID\tTitle\tAuthor\tSeries\tPublish Date\tModify Date\n");
 
 	status = sqlite3_exec(db, "SELECT * FROM Books", print_entry, 0, &error_msg);
 
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot query database, SQL error: %s\n", error_msg);
 		sqlite3_free(error_msg);
-		return status;
 	}
+
+	return status;
+}
+
+/* Add a book to the db */
+int add_book (sqlite3 * db, book_t * book)
+{
+	int status = 0;
+	char * error_msg;
+	char * query;
+
+	printf("OFJaslkjdkn\n");
+	sprintf(query,
+			"INSERT INTO Books (title, author, series, publishdate, modifydate, "
+				"epubfile, mobifile, pdffile)"
+				"Values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+			book->title, book->author, book->series, book->publishdate, book->modifydate,
+			book->epubfile, book->mobifile, book->pdffile);
+
+	status = sqlite3_exec(db, query, 0, 0, &error_msg);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot add to database, SQL error: %s\n", error_msg);
+		sqlite3_free(error_msg);
+	}
+
+	return status;
 }
 
 int main (int argc, char * argv[])
@@ -89,6 +118,7 @@ int main (int argc, char * argv[])
 					break;
 				case 'V':
 					printf("%s %s\n", prog_name, version_string);
+					exit(0);
 					break;
 				case 'h':
 					printf("Usage: &s [OPTION]... [FILE]...\
@@ -97,6 +127,7 @@ int main (int argc, char * argv[])
 							\n\t-V,\t--version\tDisplay program version\
 							\n\t-h,\t--help\tDisplay this message\
 							\n", prog_name);
+					exit(0);
 					break;
 			}
 		}
@@ -108,31 +139,33 @@ int main (int argc, char * argv[])
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database, SQL error: %s\n",
 				sqlite3_errmsg(db));
-		sqlite3_free(error_msg);
-		sqlite3_close(db);
-		exit(status);
+		goto quit;
 	}
 
 	/* Create table if it doesn't already exist */
 	status = sqlite3_exec(db,
 			"CREATE TABLE IF NOT EXISTS "
 		   		"Books(Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
-					"Title TEXT, "
-					"Author TEXT)",
+					"title TEXT, "
+					"author TEXT, "
+					"series TEXT, "
+					"publishdate TEXT, "
+					"modifydate TEXT, "
+					"epubfile TEXT, "
+					"mobifile TEXT, "
+					"pdffile TEXT)",
 			0, 0, &error_msg);
 
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot create table, SQL error: %s\n", error_msg);
-
-		sqlite3_free(error_msg);
-		sqlite3_close(db);
-		exit(status);
+		goto quit;
 	}
 
 	if (print_the_db) print_db(db);
 
+quit:
+	sqlite3_free(error_msg);
 	sqlite3_close(db);
-
 	exit(status);
 }
 
