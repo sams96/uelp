@@ -26,7 +26,8 @@ const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";
 
-int print_entry (void * none, int colc, char ** colv, char **azcolname)
+/* Callback function to print one entry of the database */
+int print_entry (void * none, int colc, char ** colv, char ** azcolname)
 {
 	for (int i = 0; i < colc; i++)
 		printf("%s\t", colv[i]);
@@ -36,15 +37,19 @@ int print_entry (void * none, int colc, char ** colv, char **azcolname)
 	return 0;
 }
 
+/* Print the database */
 int print_db (sqlite3 * db)
 {
 	int status = 0;
 	char * error_msg;
 
+	printf("ID\tTitle\tAuthor\n");
+
 	status = sqlite3_exec(db, "SELECT * FROM Books", print_entry, 0, &error_msg);
 
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot query database, SQL error: %s\n", error_msg);
+		sqlite3_free(error_msg);
 		return status;
 	}
 }
@@ -103,6 +108,7 @@ int main (int argc, char * argv[])
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database, SQL error: %s\n",
 				sqlite3_errmsg(db));
+		sqlite3_free(error_msg);
 		sqlite3_close(db);
 		exit(status);
 	}
