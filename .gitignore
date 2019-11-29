@@ -54,3 +54,10 @@ dkms.conf
 
 # Database files
 *.db
+
+# Ebook files
+*.epub
+*.mobi
+*.pdf
+*.azw
+*.azw3
