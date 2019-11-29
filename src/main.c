@@ -23,7 +23,7 @@
 #include <sqlite3.h>
 #include <getopt.h>
 
-#include "book.h"
+#include "epub.h"
 
 const char * default_db = "books.db";
 const char * version_string = "v0.0";
@@ -63,7 +63,7 @@ int add_book (sqlite3 * db, book_t * book)
 {
 	int status = 0;
 	char * error_msg;
-	char * query;
+	char query[1300];
 
 	printf("OFJaslkjdkn\n");
 	sprintf(query,
@@ -102,11 +102,6 @@ int main (int argc, char * argv[])
 		{0, 			0, 					0, 	0}
 	};
 
-	if (argc == 1)
-		printf("Usage: %s [OPTION]...\
-				\nTry '%s --help' for more information.\n",
-				prog_name, prog_name);
-
 	while (optind < argc) {
 		if ((opt = getopt_long(argc, argv, "V", long_options, &opt)) != -1) {
 			switch (opt) {
@@ -121,7 +116,7 @@ int main (int argc, char * argv[])
 					exit(0);
 					break;
 				case 'h':
-					printf("Usage: &s [OPTION]... [FILE]...\
+					printf("Usage: %s [OPTION]... [FILE]...\
 							\nOptions:\
 							\n\t-d,\t--database\tUse a different database file\
 							\n\t-V,\t--version\tDisplay program version\
@@ -134,7 +129,7 @@ int main (int argc, char * argv[])
 	}
 
 	/* Open DB */
-	status = sqlite3_open(default_db, &db);
+	status = sqlite3_open(db_fn, &db);
 
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database, SQL error: %s\n",
@@ -162,6 +157,8 @@ int main (int argc, char * argv[])
 	}
 
 	if (print_the_db) print_db(db);
+
+	book_t * bk = get_epub_metadata("test.epub");
 
 quit:
 	sqlite3_free(error_msg);
