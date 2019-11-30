@@ -57,12 +57,16 @@ static char * search_xml (xmlNode * root, char * name)
 	char * ret = NULL;
 	char * this = NULL;
 
+	/* Loop through nodes on this level */
 	for (cur = root; cur; cur = cur->next) {
-		if (xmlStrEqual(cur->name, (xmlChar *) name)) {
-			return (char *) cur->children->content;
-		}
 
+		if (xmlStrEqual(cur->name, (xmlChar *) name))
+			return (char *) cur->children->content;
+
+		/* Search child nodes */
 		this = search_xml(cur->children, name);
+
+		/* Pass the return value back up the stack */
 		if (this != NULL) ret = this;
 	}
 
@@ -86,11 +90,9 @@ book_t * get_epub_metadata (const char * path)
 		goto free;
 	}
 
+	/* Open and read content.opf file */
 	status = zip_stat(in, content_path, ZIP_FL_NOCASE, sb);
 	metad = zip_fopen(in, content_path, ZIP_FL_NOCASE);
-
-	printf("%li\n", sb->size);
-
 	char * buf = malloc((size_t) sb->size);
 	zip_fread(metad, buf, sb->size);
 
@@ -107,7 +109,6 @@ book_t * get_epub_metadata (const char * path)
 	}
 
 	/* Search for and store the relevant information */
-	/* TODO: find a nicer way to do this */
 	char * title = search_xml(root, "title");
 	if (title) strcpy(out->title, title);
 
@@ -124,6 +125,8 @@ book_t * get_epub_metadata (const char * path)
 	}
 
 	status = get_date(out->modifydate);
+
+	strcpy(out->epubfile, path);
 
 free:
 	xmlFreeDoc(data);
