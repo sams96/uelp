@@ -17,11 +17,25 @@
 */
 
 #include <string.h>
+#include <time.h>
 
 #include <zip.h>
 #include <libxml/parser.h>
 
 #include "epub.h"
+
+/* Return today's date as a string in the format 'YYYY-MM-DD' */
+static int get_date (char * out)
+{
+	int status = 0;
+	time_t t = time(NULL);
+	struct tm tm = * localtime(&t);
+
+	status = sprintf(out, "%d-%d-%d", tm.tm_year + 1900, tm.tm_mon + 1,
+			tm.tm_mday);
+
+	return status;
+}
 
 static void print_element_names (xmlNode * a_node)
 {
@@ -102,6 +116,14 @@ book_t * get_epub_metadata (const char * path)
 
 	char * series = search_xml(root, "series");
 	if (series) strcpy(out->series, series);
+
+	char * publishdate = search_xml(root, "date");
+	if (publishdate) {
+		strncpy(out->publishdate, publishdate, 10);
+		out->publishdate[11] = '\0';
+	}
+
+	status = get_date(out->modifydate);
 
 free:
 	xmlFreeDoc(data);
