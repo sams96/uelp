@@ -13,7 +13,7 @@ OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
 EXECUTABLE = uelp
 
 $(EXECUTABLE): pre $(OBJECTS)
-	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 pre:
 	@echo -e "C compiler: \t" $(CC) 

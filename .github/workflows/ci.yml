@@ -8,21 +8,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: make
-      run: make
-
-  build-macos:
-    runs-on: macOS-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    - name: make
-      run: make
-
-  build-windows:
-    runs-on: windows-latest
-    
-    steps:
-    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: sudo apt-get install sqlite3 libsqlite3-dev libzip-dev libxml2
     - name: make
       run: make
