@@ -16,8 +16,13 @@
 	uelp. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _EPUB_H
+#define _EPUB_H
+
 #include "book.h"
 
 book_t * get_epub_metadata (const char * path);
+
+#endif // _EPUB_H
 
 // vim: tabstop=4 softtabstop=0 noexpandtab shiftwidth=4

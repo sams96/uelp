@@ -16,6 +16,9 @@
 	uelp. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _BOOK_H
+#define _BOOK_H
+
 typedef struct book_t
 {
 	char title[128];
@@ -34,5 +37,7 @@ typedef struct book_t
 	/* TODO: remove magic numbers */
 	/* TODO: figure out the whole PATH_MAX thing */
 } book_t;
+
+#endif // _BOOK_H
 
 // vim: tabstop=4 softtabstop=0 noexpandtab shiftwidth=4
