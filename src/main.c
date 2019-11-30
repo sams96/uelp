@@ -25,12 +25,19 @@
 
 #include "epub.h"
 
+#if defined __GNUC__ || defined __clang__
+	#define UNUSED __attribute__((unused))
+#else
+	#define UNUSED
+#endif
+
 const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";
 
 /* Callback function to print one entry of the database */
-int print_entry (void * none, int colc, char ** colv, char ** azcolname)
+int print_entry (UNUSED void * none, int colc, char ** colv,
+		UNUSED char ** azcolname)
 {
 	for (int i = 0; i < colc; i++)
 		printf("%s\t", colv[i]);
@@ -44,7 +51,7 @@ int print_entry (void * none, int colc, char ** colv, char ** azcolname)
 int print_db (sqlite3 * db)
 {
 	int status = 0;
-	char * error_msg;
+	char * error_msg = NULL;
 
 	printf("ID\tTitle\tAuthor\tSeries\tPublish Date\tModify Date\n");
 
@@ -62,7 +69,7 @@ int print_db (sqlite3 * db)
 int add_book (sqlite3 * db, book_t * book)
 {
 	int status = 0;
-	char * error_msg;
+	char * error_msg = NULL;
 	char query[1300];
 
 	printf("OFJaslkjdkn\n");
@@ -89,7 +96,7 @@ int main (int argc, char * argv[])
 	int opt;
 
 	sqlite3 * db;
-	char * error_msg;
+	char * error_msg = NULL;
 	char * db_fn = (char *) default_db;
 
 	int print_the_db = 0;
