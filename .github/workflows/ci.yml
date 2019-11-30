@@ -3,18 +3,26 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-
-    runs-on: [ubuntu-latest, windows-latest, macOS-latest]
+  build-linux:
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v1
-
     - name: make
       run: make
-      
-#     TODO: Add these to makefile 
-#    - name: make check
-#      run: make check
-#    - name: make distcheck
-#      run: make distcheck
+
+  build-macos:
+    runs-on: macOS-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: make
+      run: make
+
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: make
+      run: make
