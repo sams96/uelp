@@ -28,7 +28,7 @@ static void print_element_names (xmlNode * a_node)
 	xmlNode * cur = NULL;
 
 	for (cur = a_node; cur; cur = cur->next) {
-		if (cur->type = XML_ELEMENT_NODE) {
+		if (cur->type == XML_ELEMENT_NODE) {
 			printf("name: %s\tcontent: %s\n", cur->name, cur->content);
 		}
 
@@ -37,15 +37,15 @@ static void print_element_names (xmlNode * a_node)
 }
 
 /* Search the xml tree for a given name and return the content */
-static xmlChar * search_xml (xmlNode * root, char * name)
+static char * search_xml (xmlNode * root, char * name)
 {
 	xmlNode * cur = NULL;
-	xmlChar * ret = NULL;
-	xmlChar * this = NULL;
+	char * ret = NULL;
+	char * this = NULL;
 
 	for (cur = root; cur; cur = cur->next) {
-		if (xmlStrEqual(cur->name, name)) {
-			return cur->children->content;
+		if (xmlStrEqual(cur->name, (xmlChar *) name)) {
+			return (char *) cur->children->content;
 		}
 
 		this = search_xml(cur->children, name);
@@ -94,13 +94,13 @@ book_t * get_epub_metadata (const char * path)
 
 	/* Search for and store the relevant information */
 	/* TODO: find a nicer way to do this */
-	xmlChar * title = search_xml(root, "title");
+	char * title = search_xml(root, "title");
 	if (title) strcpy(out->title, title);
 
-	xmlChar * author = search_xml(root, "author");
+	char * author = search_xml(root, "creator");
 	if (author) strcpy(out->author, author);
 
-	xmlChar * series = search_xml(root, "series");
+	char * series = search_xml(root, "series");
 	if (series) strcpy(out->series, series);
 
 free:
