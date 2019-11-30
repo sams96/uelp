@@ -69,7 +69,7 @@ book_t * get_epub_metadata (const char * path)
 
 	if (in == NULL) {
 		fprintf(stderr, "Failed to open %s, error %d\n", path, status);
-		return NULL;
+		goto free;
 	}
 
 	status = zip_stat(in, content_path, ZIP_FL_NOCASE, sb);
@@ -83,14 +83,27 @@ book_t * get_epub_metadata (const char * path)
 	xmlDocPtr data = xmlParseMemory(buf, sb->size);
 	if (data == NULL) {
 		fprintf(stderr, "Failed to parse %s\n", path);
+		goto free;
 	}
 
 	xmlNode * root = xmlDocGetRootElement(data);
+	if (root == NULL) {
+		fprintf(stderr, "Failed to get root element in %s\n", path);
+		goto free;
+	}
 
+	/* Search for and store the relevant information */
+	/* TODO: find a nicer way to do this */
 	xmlChar * title = search_xml(root, "title");
 	if (title) strcpy(out->title, title);
-	printf("title: %s\n", out->title);
 
+	xmlChar * author = search_xml(root, "author");
+	if (author) strcpy(out->author, author);
+
+	xmlChar * series = search_xml(root, "series");
+	if (series) strcpy(out->series, series);
+
+free:
 	xmlFreeDoc(data);
 	free(buf);
 	zip_fclose(metad);
