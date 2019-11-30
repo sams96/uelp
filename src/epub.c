@@ -16,6 +16,8 @@
 	uelp. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string.h>
+
 #include <zip.h>
 #include <libxml/parser.h>
 
@@ -27,11 +29,30 @@ static void print_element_names (xmlNode * a_node)
 
 	for (cur = a_node; cur; cur = cur->next) {
 		if (cur->type = XML_ELEMENT_NODE) {
-			printf("name: %s\n", cur->name);
+			printf("name: %s\tcontent: %s\n", cur->name, cur->content);
 		}
 
 		print_element_names(cur->children);
 	}
+}
+
+/* Search the xml tree for a given name and return the content */
+static xmlChar * search_xml (xmlNode * root, char * name)
+{
+	xmlNode * cur = NULL;
+	xmlChar * ret = NULL;
+	xmlChar * this = NULL;
+
+	for (cur = root; cur; cur = cur->next) {
+		if (xmlStrEqual(cur->name, name)) {
+			return cur->children->content;
+		}
+
+		this = search_xml(cur->children, name);
+		if (this != NULL) ret = this;
+	}
+
+	return ret;
 }
 
 book_t * get_epub_metadata (const char * path)
@@ -65,7 +86,10 @@ book_t * get_epub_metadata (const char * path)
 	}
 
 	xmlNode * root = xmlDocGetRootElement(data);
-	print_element_names(root);
+
+	xmlChar * title = search_xml(root, "title");
+	if (title) strcpy(out->title, title);
+	printf("title: %s\n", out->title);
 
 	xmlFreeDoc(data);
 	free(buf);
