@@ -110,7 +110,7 @@ int main (int argc, char * argv[])
 	};
 
 	while (optind < argc) {
-		if ((opt = getopt_long(argc, argv, "V", long_options, &opt)) != -1) {
+		if ((opt = getopt_long(argc, argv, "dpVh", long_options, &opt)) != -1) {
 			switch (opt) {
 				case 'd':
 					db_fn = optarg;
@@ -163,9 +163,10 @@ int main (int argc, char * argv[])
 		goto quit;
 	}
 
-	if (print_the_db) print_db(db);
-
 	book_t * bk = get_epub_metadata("test.epub");
+	add_book(db, bk);
+
+	if (print_the_db) print_db(db);
 
 quit:
 	sqlite3_free(error_msg);

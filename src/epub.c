@@ -75,12 +75,12 @@ static char * search_xml (xmlNode * root, char * name)
 
 book_t * get_epub_metadata (const char * path)
 {
-	int status;
+	int status = 0;
 	book_t * out = malloc(sizeof(book_t));
 	zip_t * in = NULL;
 	zip_stat_t * sb = malloc(sizeof(zip_stat_t));
 	zip_file_t * metad = NULL;
-	char * buf = malloc((size_t) sb->size);
+	char * buf = NULL;
 	xmlDocPtr data = NULL;
 	xmlNode * root = NULL;
 
@@ -95,8 +95,23 @@ book_t * get_epub_metadata (const char * path)
 
 	/* Open and read content.opf file */
 	status = zip_stat(in, content_path, ZIP_FL_NOCASE, sb);
+	if (status) {
+		fprintf(stderr, "Failed to get file info: %s\n", path);
+		goto free;
+	}
+
 	metad = zip_fopen(in, content_path, ZIP_FL_NOCASE);
-	zip_fread(metad, buf, sb->size);
+	if (metad == NULL) {
+		fprintf(stderr, "Failed to open %s in %s\n", content_path, path);
+		goto free;
+	}
+
+	buf = malloc((size_t) sb->size);
+	int fread_status = zip_fread(metad, buf, sb->size);
+	if (fread_status == -1) {
+		fprintf(stderr, "Failed to read %s in %s\n", content_path, path);
+		goto free;
+	}
 
 	data = xmlParseMemory(buf, sb->size);
 	if (data == NULL) {
