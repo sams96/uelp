@@ -70,9 +70,8 @@ int add_book (sqlite3 * db, book_t * book)
 {
 	int status = 0;
 	char * error_msg = NULL;
-	char query[1300];
+	char query[1300]; // TODO: remove magic numbers
 
-	printf("OFJaslkjdkn\n");
 	sprintf(query,
 			"INSERT INTO Books (title, author, series, publishdate, modifydate, "
 				"epubfile, mobifile, pdffile)"
@@ -90,6 +89,26 @@ int add_book (sqlite3 * db, book_t * book)
 	return status;
 }
 
+/* Remove a book from the db, given it's ID */
+int remove_book (sqlite3 * db, char * ID)
+{
+	int status = 0;
+	char * error_msg = NULL;
+	char query[1300]; // TODO: remove magic numbers
+
+	sprintf(query, "DELETE FROM Books WHERE Id = %s;", ID);
+	printf("%s\n", query);
+	status = sqlite3_exec(db, query, 0, 0, &error_msg);
+
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Cannot remove %s from database, SQL error: %s\n",
+				ID, error_msg);
+		sqlite3_free(error_msg);
+	}
+
+	return status;
+}
+
 int main (int argc, char * argv[])
 {
 	int status = 0;
@@ -98,12 +117,16 @@ int main (int argc, char * argv[])
 	sqlite3 * db;
 	char * error_msg = NULL;
 	char * db_fn = (char *) default_db;
+
+	// TODO: find a nicer way to handle these
 	char * file_to_add = NULL;
+	char * file_to_remove = NULL;
 
 	int print_the_db = 0;
 
 	static struct option long_options[] = {
 		{"add", 		required_argument, 	0, 	'a'},
+		{"remove", 		required_argument, 	0, 	'r'},
 		{"database", 	required_argument, 	0, 	'd'},
 		{"print", 		no_argument, 		0, 	'p'},
 		{"version", 	no_argument, 		0, 	'V'},
@@ -112,10 +135,13 @@ int main (int argc, char * argv[])
 	};
 
 	while (optind < argc) {
-		if ((opt = getopt_long(argc, argv, "adpVh", long_options, &opt)) != -1) {
+		if ((opt = getopt_long(argc, argv, "a:r:d:pVh", long_options, &opt)) != -1) {
 			switch (opt) {
 				case 'a':
 					file_to_add = optarg;
+					break;
+				case 'r':
+					file_to_remove = optarg;
 					break;
 				case 'd':
 					db_fn = optarg;
@@ -131,6 +157,7 @@ int main (int argc, char * argv[])
 					printf("Usage: %s [OPTION]... [FILE]...\
 							\nOptions:\
 							\n\t-a,\t--add\tAdd the given file to the database\
+							\n\t-r,\t--remove\tRemove book with the given ID\
 							\n\t-d,\t--database\tUse a different database file\
 							\n\t-V,\t--version\tDisplay program version\
 							\n\t-h,\t--help\tDisplay this message\
@@ -173,6 +200,10 @@ int main (int argc, char * argv[])
 		// TODO: Check file type
 		book_t * bk = get_epub_metadata(file_to_add);
 		add_book(db, bk);
+	}
+
+	if (file_to_remove != NULL) {
+		remove_book(db, file_to_remove);
 	}
 
 	if (print_the_db) print_db(db);
