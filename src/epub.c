@@ -24,6 +24,15 @@
 
 #include "epub.h"
 
+/* Check that the last strlen(ext) characters of path match ext */
+static int ext_match (const char * path, const char * ext)
+{
+	size_t path_len = strlen(path);
+	size_t ext_len = strlen(ext);
+
+	return path_len >= ext_len && !strcmp(path + path_len - ext_len, ext);
+}
+
 /* Return today's date as a string in the format 'YYYY-MM-DD' */
 static int get_date (char * out)
 {
@@ -76,6 +85,13 @@ static char * search_xml (xmlNode * root, char * name)
 book_t * get_epub_metadata (const char * path)
 {
 	int status = 0;
+
+	/* Check if the file is an EPUB */
+	if (!ext_match(path, ".epub")) {
+		fprintf(stderr, "%s\n is not an EPUB file\n", path);
+		return NULL;
+	}
+
 	book_t * out = malloc(sizeof(book_t));
 	zip_t * in = NULL;
 	zip_stat_t * sb = malloc(sizeof(zip_stat_t));
@@ -84,7 +100,7 @@ book_t * get_epub_metadata (const char * path)
 	xmlDocPtr data = NULL;
 	xmlNode * root = NULL;
 
-	const char * content_path = "content.opf";
+	const char * content_path = "OEBPS/content.opf";
 	
 	in = zip_open(path, ZIP_RDONLY, &status);
 
@@ -94,6 +110,7 @@ book_t * get_epub_metadata (const char * path)
 	}
 
 	/* Open and read content.opf file */
+	// TODO: Maybe search around a bit for the content file
 	status = zip_stat(in, content_path, ZIP_FL_NOCASE, sb);
 	if (status) {
 		fprintf(stderr, "Failed to get file info: %s\n", path);
