@@ -35,7 +35,9 @@ const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";
 
-/* Callback function to print one entry of the database */
+/*
+ * Callback function to print one entry of the database
+ */
 int print_entry (UNUSED void * none, int colc, char ** colv,
 		UNUSED char ** azcolname)
 {
@@ -47,7 +49,9 @@ int print_entry (UNUSED void * none, int colc, char ** colv,
 	return 0;
 }
 
-/* Print the database */
+/*
+ * Print the database
+ */
 int print_db (sqlite3 * db)
 {
 	int status = 0;
@@ -65,7 +69,9 @@ int print_db (sqlite3 * db)
 	return status;
 }
 
-/* Add a book to the db */
+/*
+ * Add a book to the db
+ */
 int add_book (sqlite3 * db, book_t * book)
 {
 	int status = 0;
@@ -76,8 +82,8 @@ int add_book (sqlite3 * db, book_t * book)
 			"INSERT INTO Books (title, author, series, publishdate, modifydate, "
 				"epubfile, mobifile, pdffile)"
 				"Values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-			book->title, book->author, book->series, book->publishdate, book->modifydate,
-			book->epubfile, book->mobifile, book->pdffile);
+			book->title, book->author, book->series, book->publishdate,
+			book->modifydate, book->epubfile, book->mobifile, book->pdffile);
 
 	status = sqlite3_exec(db, query, 0, 0, &error_msg);
 
@@ -89,7 +95,9 @@ int add_book (sqlite3 * db, book_t * book)
 	return status;
 }
 
-/* Remove a book from the db, given it's ID */
+/*
+ * Remove a book from the db, given it's ID
+ */
 int remove_book (sqlite3 * db, char * ID)
 {
 	int status = 0;
@@ -109,6 +117,9 @@ int remove_book (sqlite3 * db, char * ID)
 	return status;
 }
 
+/*
+ * Main
+ */
 int main (int argc, char * argv[])
 {
 	int status = 0;
@@ -135,7 +146,8 @@ int main (int argc, char * argv[])
 	};
 
 	while (optind < argc) {
-		if ((opt = getopt_long(argc, argv, "a:r:d:pVh", long_options, &opt)) != -1) {
+		if ((opt = getopt_long(argc, argv, "a:r:d:pVh", long_options, &opt))
+				!= -1) {
 			switch (opt) {
 				case 'a':
 					file_to_add = optarg;

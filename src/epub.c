@@ -24,7 +24,11 @@
 
 #include "epub.h"
 
-/* Check that the last strlen(ext) characters of path match ext */
+/* 
+ * Check that the last strlen(ext) characters of path match ext
+ *
+ * TODO: Move this function so it can be used for other file types 
+ */
 static int ext_match (const char * path, const char * ext)
 {
 	size_t path_len = strlen(path);
@@ -33,7 +37,9 @@ static int ext_match (const char * path, const char * ext)
 	return path_len >= ext_len && !strcmp(path + path_len - ext_len, ext);
 }
 
-/* Return today's date as a string in the format 'YYYY-MM-DD' */
+/*
+ * Return today's date as a string in the format 'YYYY-MM-DD'
+ */
 static int get_date (char * out)
 {
 	int status = 0;
@@ -46,6 +52,11 @@ static int get_date (char * out)
 	return status;
 }
 
+/*
+ * Print all the element names and contents from a_node
+ *
+ * TODO: Remove this function
+ */
 static void print_element_names (xmlNode * a_node)
 {
 	xmlNode * cur = NULL;
@@ -59,7 +70,9 @@ static void print_element_names (xmlNode * a_node)
 	}
 }
 
-/* Search the xml tree for a given name and return the content */
+/*
+ * Search the xml tree for a given name and return the content
+ */
 static char * search_xml (xmlNode * root, char * name)
 {
 	xmlNode * cur = NULL;
@@ -82,6 +95,9 @@ static char * search_xml (xmlNode * root, char * name)
 	return ret;
 }
 
+/*
+ * Return a book_t containing the metadata of a given EPUB file
+ */
 book_t * get_epub_metadata (const char * path)
 {
 	int status = 0;
