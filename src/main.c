@@ -163,18 +163,19 @@ int main (int argc, char * argv[])
 					break;
 				case 'V':
 					printf("%s %s\n", prog_name, version_string);
-					exit(0);
+					exit(EXIT_SUCCESS);
 					break;
 				case 'h':
-					printf("Usage: %s [OPTION]... [FILE]...\
-							\nOptions:\
-							\n\t-a,\t--add\tAdd the given file to the database\
-							\n\t-r,\t--remove\tRemove book with the given ID\
-							\n\t-d,\t--database\tUse a different database file\
-							\n\t-V,\t--version\tDisplay program version\
-							\n\t-h,\t--help\tDisplay this message\
-							\n", prog_name);
-					exit(0);
+				case '?':
+					printf("Usage: %s [OPTION]... [FILE]...\n"
+							"Options:\n"
+							"\t-a,\t--add\t\tAdd the given file to the database\n"
+							"\t-r,\t--remove\tRemove book with the given ID\n"
+							"\t-d,\t--database\tUse a different database file\n"
+							"\t-V,\t--version\tDisplay program version\n"
+							"\t-h,,\t--help\t\tDisplay this message\n",
+							prog_name);
+					exit(EXIT_SUCCESS);
 					break;
 			}
 		}
