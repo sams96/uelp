@@ -36,6 +36,21 @@ const char * version_string = "v0.0";
 const char * prog_name = "uelp";
 
 /*
+ * Print the help message
+ */
+static inline void print_help (void)
+{
+	printf("Usage: %s [OPTION]... [FILE]...\n"
+			"Options:\n"
+			"\t-a,\t--add\t\tAdd the given file to the database\n"
+			"\t-r,\t--remove\tRemove book with the given ID\n"
+			"\t-d,\t--database\tUse a different database file\n"
+			"\t-V,\t--version\tDisplay program version\n"
+			"\t-h,\t--help\t\tDisplay this message\n",
+			prog_name);
+}
+
+/*
  * Callback function to print one entry of the database
  */
 int print_entry (UNUSED void * none, int colc, char ** colv,
@@ -166,15 +181,7 @@ int main (int argc, char * argv[])
 					exit(EXIT_SUCCESS);
 					break;
 				case 'h':
-				case '?':
-					printf("Usage: %s [OPTION]... [FILE]...\n"
-							"Options:\n"
-							"\t-a,\t--add\t\tAdd the given file to the database\n"
-							"\t-r,\t--remove\tRemove book with the given ID\n"
-							"\t-d,\t--database\tUse a different database file\n"
-							"\t-V,\t--version\tDisplay program version\n"
-							"\t-h,,\t--help\t\tDisplay this message\n",
-							prog_name);
+					print_help();
 					exit(EXIT_SUCCESS);
 					break;
 			}
