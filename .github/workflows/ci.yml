@@ -3,54 +3,40 @@ name: CI
 on: [push]
 
 jobs:
-  build-linux:
+  linux:
     runs-on: ubuntu-latest
     
-    steps:
-    - uses: actions/checkout@v1
-    - name: install updates
-      run: sudo apt-get update
-    - name: install dependencies
-      run: sudo apt-get install sqlite3 libsqlite3-dev libzip-dev libxml2
-    - name: make with gcc
-      run: make
-    - name: clean
-      run: make clean
-    - name: make with clang
-      run: make CC=clang
-
-  test-linux:
-    runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: install updates
       run: sudo apt-get update
     - name: install dependencies
       run: sudo apt-get install sqlite3 libsqlite3-dev libzip-dev libxml2 libcmocka-dev
-    - name: make and run tests
-      run: make test
-
-  build-macos:
-    runs-on: macOS-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    - name: install dependencies
-      run: brew install sqlite libzip libxml2
     - name: make with gcc
       run: make
     - name: clean
       run: make clean
     - name: make with clang
       run: make CC=clang
+    - name: clean
+      run: make clean
+    - name: make and run tests
+      run: make test
 
-  test-macos:
+  macos:
     runs-on: macOS-latest
-
+    
     steps:
     - uses: actions/checkout@v1
     - name: install dependencies
       run: brew install sqlite libzip libxml2 cmocka
+    - name: make with gcc
+      run: make
+    - name: clean
+      run: make clean
+    - name: make with clang
+      run: make CC=clang
+    - name: clean
+      run: make clean
     - name: make and run tests
       run: make test
