@@ -25,12 +25,6 @@
 
 #include "epub.h"
 
-#if defined __GNUC__ || defined __clang__
-	#define UNUSED __attribute__((unused))
-#else
-	#define UNUSED
-#endif
-
 const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";

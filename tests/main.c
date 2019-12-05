@@ -23,7 +23,7 @@
 
 #include "../src/epub.h"
 
-static void test_ext_match (void ** state)
+static void test_ext_match (UNUSED void ** state)
 {
 	assert_true(ext_match("this_is_a_test.epub", ".epub"));
 	assert_true(ext_match("this_is_a_test.EPUB", ".epub"));

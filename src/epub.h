@@ -22,6 +22,13 @@
 #include <stdbool.h>
 #include "book.h"
 
+// TODO: move this macro somewhere more universal
+#if defined __GNUC__ || defined __clang__
+	#define UNUSED __attribute__((unused))
+#else
+	#define UNUSED
+#endif
+
 bool ext_match (const char * path, const char * ext);
 book_t * get_epub_metadata (const char * path);
 
