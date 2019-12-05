@@ -19,8 +19,10 @@
 #ifndef _EPUB_H
 #define _EPUB_H
 
+#include <stdbool.h>
 #include "book.h"
 
+bool ext_match (const char * path, const char * ext);
 book_t * get_epub_metadata (const char * path);
 
 #endif // _EPUB_H

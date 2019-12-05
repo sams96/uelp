@@ -12,8 +12,17 @@ DEPS = $(shell find src/ -name '*.h')
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
 EXECUTABLE = uelp
 
+TEST_SOURCES = $(shell find tests/ -name '*.c') \
+	       $(shell find src/ ! -name 'main.c' -name '*.c')
+TEST_OBJECTS = $(patsubst %.c,%.o,$(TEST_SOURCES))
+TEST_EXECUTABLE = uelp-test
+
 $(EXECUTABLE): pre $(OBJECTS)
 	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+
+test: pre $(TEST_OBJECTS)
+	@$(CC) $(TEST_OBJECTS) $(LDFLAGS) -lcmocka -o $(TEST_EXECUTABLE)
+	./$(TEST_EXECUTABLE)
 
 pre:
 	@echo -e "C compiler: \t" $(CC) 
@@ -26,3 +35,6 @@ pre:
 
 clean:
 	rm $(OBJECTS) $(EXECUTABLE)
+
+clean-test:
+	rm $(TEST_OBJECTS) $(TEST_EXECUTABLE)

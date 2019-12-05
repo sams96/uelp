@@ -29,7 +29,7 @@
  *
  * TODO: Move this function so it can be used for other file types 
  */
-static int ext_match (const char * path, const char * ext)
+bool ext_match (const char * path, const char * ext)
 {
 	size_t path_len = strlen(path);
 	size_t ext_len = strlen(ext);
