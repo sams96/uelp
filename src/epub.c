@@ -17,6 +17,7 @@
 */
 
 #include <string.h>
+#include <strings.h>
 #include <time.h>
 
 #include <zip.h>
@@ -34,7 +35,8 @@ bool ext_match (const char * path, const char * ext)
 	size_t path_len = strlen(path);
 	size_t ext_len = strlen(ext);
 
-	return path_len >= ext_len && !strcmp(path + path_len - ext_len, ext);
+	// TODO: Write a replacement for strcasecmp to make it more portable
+	return path_len >= ext_len && !strcasecmp(path + path_len - ext_len, ext);
 }
 
 /*
