@@ -19,6 +19,10 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include <cmocka.h>
 
 #include "../src/epub.h"
@@ -37,10 +41,29 @@ static void test_ext_match (UNUSED void ** state)
 	assert_false(ext_match("this_is_a_test.m.o.b.i", ".mobi"));
 }
 
+static void test_get_date (UNUSED void ** state)
+{
+	char * date = malloc(sizeof(char) * 11);
+
+	get_date(date);
+
+	int year = atoi(strtok(date, "-"));
+	int month = atoi(strtok(NULL, "-"));
+	int day = atoi(strtok(NULL, "-"));
+
+	time_t t = time(NULL);
+	struct tm tm = * localtime(&t);
+
+	assert_int_equal(year, tm.tm_year + 1900);
+	assert_int_equal(month, tm.tm_mon + 1);
+	assert_int_equal(day, tm.tm_mday);
+}
+
 int main (void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_ext_match),
+		cmocka_unit_test(test_get_date),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

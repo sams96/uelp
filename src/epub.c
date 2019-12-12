@@ -42,7 +42,7 @@ bool ext_match (const char * path, const char * ext)
 /*
  * Return today's date as a string in the format 'YYYY-MM-DD'
  */
-static int get_date (char * out)
+int get_date (char * out)
 {
 	int status = 0;
 	time_t t = time(NULL);
