@@ -47,6 +47,9 @@ static void test_get_date (UNUSED void ** state)
 
 	get_date(date);
 
+	assert_int_equal(strlen(date), 10);
+	assert_int_equal((int) date[10], (int) '\0');
+
 	int year = atoi(strtok(date, "-"));
 	int month = atoi(strtok(NULL, "-"));
 	int day = atoi(strtok(NULL, "-"));
@@ -57,6 +60,7 @@ static void test_get_date (UNUSED void ** state)
 	assert_int_equal(year, tm.tm_year + 1900);
 	assert_int_equal(month, tm.tm_mon + 1);
 	assert_int_equal(day, tm.tm_mday);
+
 }
 
 int main (void)
