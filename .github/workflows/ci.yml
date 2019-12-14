@@ -27,9 +27,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install updates
-      run: sudo apt-get update
+      run: sudo apt-get -y update
     - name: install dependencies
-      run: sudo apt-get install sqlite3 libsqlite3-dev libzip-dev libxml2 libcmocka-dev
+      run: sudo apt-get -y install sqlite3 libsqlite3-dev libzip-dev libxml2 libcmocka-dev
     - name: make with gcc
       run: make
     - name: clean
