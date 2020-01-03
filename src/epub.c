@@ -25,6 +25,40 @@
 
 #include "epub.h"
 
+/*
+ * Check the format of a date string is YYYY-MM-DD
+ */
+bool check_date_format (char * date)
+{
+	if (date[4] != '-' || date[7] != '-') return false;
+
+	char year_string[4];
+	strncpy(year_string, date, 4);
+	year_string[4] = '\0';
+	int year = atoi(year_string);
+
+	char month_string[2];
+	strncpy(month_string, &date[5], 2);
+	month_string[2] = '\0';
+	int month = atoi(month_string);
+
+	char day_string[2];
+	strncpy(day_string, &date[8], 2);
+	day_string[2] = '\0';
+	int day = atoi(day_string);
+
+	// TODO: Allow years beyond this range but still check validity 
+	if (year <= 0 || year > 3000) return false;
+
+	if (month <= 0 || month > 12) return false;
+
+	// TODO: Actually check if that day exists in that month of that year
+	if (day <= 0 || day > 31) return false;
+
+	return true;
+}
+
+
 /* 
  * Check that the last strlen(ext) characters of path match ext
  *
@@ -172,8 +206,12 @@ book_t * get_epub_metadata (const char * path)
 
 	char * publishdate = search_xml(root, "date");
 	if (publishdate) {
-		strncpy(out->publishdate, publishdate, 10);
-		out->publishdate[10] = '\0';
+		if (!check_date_format(publishdate)) {
+			fprintf(stderr, "Invalid date format: %s\n", publishdate);
+		} else {
+			strncpy(out->publishdate, publishdate, 10);
+			out->publishdate[10] = '\0';
+		}
 	}
 
 	status = get_date(out->modifydate);

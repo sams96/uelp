@@ -27,6 +27,16 @@
 
 #include "../src/epub.h"
 
+static void test_check_date_format (UNUSED void ** state)
+{
+	assert_true(check_date_format("2020-01-03"));
+
+	assert_false(check_date_format("4000-01-03"));
+	assert_false(check_date_format("2020-13-03"));
+	assert_false(check_date_format("2020-01-99"));
+	assert_false(check_date_format("2020_01_03"));
+}
+
 static void test_ext_match (UNUSED void ** state)
 {
 	assert_true(ext_match("this_is_a_test.epub", ".epub"));
@@ -66,6 +76,7 @@ static void test_get_date (UNUSED void ** state)
 int main (void)
 {
 	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_check_date_format),
 		cmocka_unit_test(test_ext_match),
 		cmocka_unit_test(test_get_date),
 	};

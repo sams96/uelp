@@ -29,6 +29,7 @@
 	#define UNUSED
 #endif
 
+bool check_date_format (char * date);
 bool ext_match (const char * path, const char * ext);
 int get_date (char * out);
 book_t * get_epub_metadata (const char * path);
