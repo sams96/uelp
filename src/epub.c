@@ -32,28 +32,36 @@ bool check_date_format (char * date)
 {
 	if (date[4] != '-' || date[7] != '-') return false;
 
-	char year_string[4];
+	char year_string[5];
 	strncpy(year_string, date, 4);
 	year_string[4] = '\0';
 	int year = atoi(year_string);
 
-	char month_string[2];
+	char month_string[3];
 	strncpy(month_string, &date[5], 2);
 	month_string[2] = '\0';
 	int month = atoi(month_string);
 
-	char day_string[2];
+	char day_string[3];
 	strncpy(day_string, &date[8], 2);
 	day_string[2] = '\0';
 	int day = atoi(day_string);
 
 	// TODO: Allow years beyond this range but still check validity 
-	if (year <= 0 || year > 3000) return false;
+	if (year <= 0 || year > 9999) return false;
 
 	if (month <= 0 || month > 12) return false;
 
-	// TODO: Actually check if that day exists in that month of that year
 	if (day <= 0 || day > 31) return false;
+
+	if (day > 30 && (month == 4 || month ==  6  || month == 9 || month == 11))
+		return false;
+
+	if (day > 29 && month == 2) return false;
+
+	if (day > 28 && month == 2 &&
+			!(year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)))
+		return false;
 
 	return true;
 }

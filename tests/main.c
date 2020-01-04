@@ -30,8 +30,15 @@
 static void test_check_date_format (UNUSED void ** state)
 {
 	assert_true(check_date_format("2020-01-03"));
+	assert_true(check_date_format("2020-02-29"));
+	assert_true(check_date_format("2020-03-31"));
+	assert_true(check_date_format("2000-02-29"));
 
-	assert_false(check_date_format("4000-01-03"));
+	assert_false(check_date_format("2020-04-31"));
+	assert_false(check_date_format("2019-02-29"));
+	assert_false(check_date_format("1900-02-29"));
+
+	assert_false(check_date_format("40000-01-03"));
 	assert_false(check_date_format("2020-13-03"));
 	assert_false(check_date_format("2020-01-99"));
 	assert_false(check_date_format("2020_01_03"));
