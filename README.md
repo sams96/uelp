@@ -8,6 +8,7 @@ Have these dependencies installed:
 * sqlite3
 * libzip
 * libxml2
+* GTK+ 3
 
 Run `make`.
 

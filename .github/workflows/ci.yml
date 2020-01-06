@@ -29,7 +29,7 @@ jobs:
     - name: install updates
       run: sudo apt-get -y update
     - name: install dependencies
-      run: sudo apt-get -y install sqlite3 libsqlite3-dev libzip-dev libxml2 libcmocka-dev
+      run: sudo apt-get -y install sqlite3 libsqlite3-dev libzip-dev libxml2 libcmocka-dev libgtk-3-dev
     - name: make with gcc
       run: make
     - name: clean
@@ -47,7 +47,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install dependencies
-      run: brew install sqlite libzip libxml2 cmocka
+      run: brew install sqlite libzip libxml2 cmocka gtk+3 pkg-config
     - name: make with gcc
       run: make
     - name: clean
