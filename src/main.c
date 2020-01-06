@@ -22,12 +22,45 @@
 
 #include <sqlite3.h>
 #include <getopt.h>
+#include <gtk/gtk.h>
 
 #include "epub.h"
 
 const char * default_db = "books.db";
 const char * version_string = "v0.0";
 const char * prog_name = "uelp";
+
+enum {
+	LIST_ID,
+	LIST_TITLE,
+	LIST_SERIES,
+	LIST_PUBDATE,
+	LIST_MODDATE,
+	LIST_EPUB,
+	LIST_MOBI,
+	LIST_PDF,
+	N_COLUMNS
+};
+
+int db_add_item_to_gtk_store_callback (void * model, UNUSED int argc, char ** argv,
+		UNUSED char ** az_col_name)
+{
+	GtkTreeIter i;
+
+	gtk_list_store_append(GTK_LIST_STORE(model), &i);
+	gtk_list_store_set(GTK_LIST_STORE(model), &i,
+			LIST_ID, argv[1],
+			LIST_TITLE, argv[2],
+			LIST_SERIES, argv[3],
+			LIST_PUBDATE, argv[4],
+			LIST_MODDATE, argv[5],
+			LIST_EPUB, argv[6],
+			LIST_MOBI, argv[7],
+			LIST_PDF, argv[8],
+			-1);
+
+	return 0;
+}
 
 /*
  * Print the help message
@@ -126,6 +159,99 @@ int remove_book (sqlite3 * db, char * ID)
 	return status;
 }
 
+static void activate (GtkApplication * app, gpointer user_data)
+{
+	GtkWidget * window;
+	sqlite3 * db = (sqlite3 *) user_data;
+
+	GtkCellRenderer * renderer;
+	GtkTreeViewColumn * column;
+	GtkWidget * list;
+	GtkWidget * box;
+	GtkListStore * store;
+
+	char * error_msg = NULL;
+	int status;
+
+	store = gtk_list_store_new(9, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+			G_TYPE_STRING, G_TYPE_STRING);
+
+	status = sqlite3_exec(db, "SELECT * FROM Books",
+			db_add_item_to_gtk_store_callback, store, &error_msg);
+
+	// TODO: Exit here?
+	if (status != SQLITE_OK)
+		fprintf(stderr, "Cannon query database, SQL error: %s\n", error_msg);
+
+	window = gtk_application_window_new(app);
+	list = gtk_tree_view_new();
+
+	/* Create column with cell renderer */
+	// TODO: Use a function/loop for this
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("ID", renderer, "text",
+			0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("Title", renderer, "text",
+			0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("Author", renderer, "text",
+			0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("Series", renderer, "text",
+			0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("Publish Date", renderer,
+			"text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("Modify Date", renderer,
+			"text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("EPUB File", renderer,
+			"text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("MOBI File", renderer,
+			"text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	renderer = gtk_cell_renderer_text_new();
+	column = gtk_tree_view_column_new_with_attributes("PDF File", renderer,
+			"text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
+
+	g_object_unref(store);
+
+	gtk_window_set_title(GTK_WINDOW(window), prog_name);
+	gtk_window_set_default_size(GTK_WINDOW(window), 960, 720);
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), FALSE);
+
+	box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_box_pack_start(GTK_BOX(box), list, TRUE, TRUE, 5);
+	gtk_container_add(GTK_CONTAINER(window), box);
+
+	gtk_widget_show_all(window);
+}
+
+
 /*
  * Main
  */
@@ -221,6 +347,12 @@ int main (int argc, char * argv[])
 	}
 
 	if (print_the_db) print_db(db);
+
+	GtkApplication * app;
+	app = gtk_application_new("com.github.sams96.uelp", G_APPLICATION_FLAGS_NONE);
+	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+	status = g_application_run(G_APPLICATION(app), argc, argv);
+	g_object_unref(app);
 
 quit:
 	sqlite3_free(error_msg);

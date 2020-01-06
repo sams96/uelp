@@ -2,10 +2,12 @@ CC = gcc
 CSTD = c99
 
 XML_CFLAGS = $(shell xml2-config --cflags)
-CFLAGS = -g -W -Wall -pedantic -std=$(CSTD) $(XML_CFLAGS)
+GTK_CFLAGS = $(shell pkg-config --cflags gtk+-3.0)
+CFLAGS = -g -W -Wall -pedantic -std=$(CSTD) $(XML_CFLAGS) $(GTK_CFLAGS)
 
 XML_LDFLAGS = $(shell xml2-config --libs)
-LDFLAGS = -lsqlite3 -lzip $(XML_LDFLAGS)
+GTK_LDFLAGS = $(shell pkg-config --libs gtk+-3.0)
+LDFLAGS = -lsqlite3 -lzip $(XML_LDFLAGS) $(GTK_LDFLAGS)
 
 SOURCES = $(shell find src/ -name '*.c')
 DEPS = $(shell find src/ -name '*.h')
