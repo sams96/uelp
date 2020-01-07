@@ -42,21 +42,24 @@ enum {
 	N_COLUMNS
 };
 
-int db_add_item_to_gtk_store_callback (void * model, UNUSED int argc, char ** argv,
-		UNUSED char ** az_col_name)
+/*
+ * SQLite callback function to add items to gtk store
+ */
+int db_add_item_to_store (void * store, UNUSED int colc, char ** colv,
+		UNUSED char ** azcolname)
 {
 	GtkTreeIter i;
 
-	gtk_list_store_append(GTK_LIST_STORE(model), &i);
-	gtk_list_store_set(GTK_LIST_STORE(model), &i,
-			LIST_ID, argv[1],
-			LIST_TITLE, argv[2],
-			LIST_SERIES, argv[3],
-			LIST_PUBDATE, argv[4],
-			LIST_MODDATE, argv[5],
-			LIST_EPUB, argv[6],
-			LIST_MOBI, argv[7],
-			LIST_PDF, argv[8],
+	gtk_list_store_append(GTK_LIST_STORE(store), &i);
+	gtk_list_store_set(GTK_LIST_STORE(store), &i,
+			LIST_ID, colv[1],
+			LIST_TITLE, colv[2],
+			LIST_SERIES, colv[3],
+			LIST_PUBDATE, colv[4],
+			LIST_MODDATE, colv[5],
+			LIST_EPUB, colv[6],
+			LIST_MOBI, colv[7],
+			LIST_PDF, colv[8],
 			-1);
 
 	return 0;
@@ -177,8 +180,8 @@ static void activate (GtkApplication * app, gpointer user_data)
 			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
 			G_TYPE_STRING, G_TYPE_STRING);
 
-	status = sqlite3_exec(db, "SELECT * FROM Books",
-			db_add_item_to_gtk_store_callback, store, &error_msg);
+	status = sqlite3_exec(db, "SELECT * FROM Books", db_add_item_to_store,
+			store, &error_msg);
 
 	if (status != SQLITE_OK) {
 		fprintf(stderr, "Can't query database, SQL error: %s\n", error_msg);
