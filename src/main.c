@@ -180,9 +180,10 @@ static void activate (GtkApplication * app, gpointer user_data)
 	status = sqlite3_exec(db, "SELECT * FROM Books",
 			db_add_item_to_gtk_store_callback, store, &error_msg);
 
-	// TODO: Exit here?
-	if (status != SQLITE_OK)
-		fprintf(stderr, "Cannon query database, SQL error: %s\n", error_msg);
+	if (status != SQLITE_OK) {
+		fprintf(stderr, "Can't query database, SQL error: %s\n", error_msg);
+		return;
+	}
 
 	window = gtk_application_window_new(app);
 	list = gtk_tree_view_new();
