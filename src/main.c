@@ -52,14 +52,14 @@ int db_add_item_to_store (void * store, UNUSED int colc, char ** colv,
 
 	gtk_list_store_append(GTK_LIST_STORE(store), &i);
 	gtk_list_store_set(GTK_LIST_STORE(store), &i,
-			LIST_ID, colv[1],
-			LIST_TITLE, colv[2],
-			LIST_SERIES, colv[3],
-			LIST_PUBDATE, colv[4],
-			LIST_MODDATE, colv[5],
-			LIST_EPUB, colv[6],
-			LIST_MOBI, colv[7],
-			LIST_PDF, colv[8],
+			LIST_ID, 		colv[0],
+			LIST_TITLE, 	colv[1],
+			LIST_SERIES, 	colv[2],
+			LIST_PUBDATE, 	colv[3],
+			LIST_MODDATE, 	colv[4],
+			LIST_EPUB, 		colv[5],
+			LIST_MOBI, 		colv[6],
+			LIST_PDF, 		colv[7],
 			-1);
 
 	return 0;
@@ -176,9 +176,9 @@ static void activate (GtkApplication * app, gpointer user_data)
 	char * error_msg = NULL;
 	int status;
 
-	store = gtk_list_store_new(9, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+	store = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
 			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-			G_TYPE_STRING, G_TYPE_STRING);
+			G_TYPE_STRING);
 
 	status = sqlite3_exec(db, "SELECT * FROM Books", db_add_item_to_store,
 			store, &error_msg);
