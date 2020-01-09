@@ -33,6 +33,7 @@ const char * prog_name = "uelp";
 enum {
 	LIST_ID,
 	LIST_TITLE,
+	LIST_AUTHOR,
 	LIST_SERIES,
 	LIST_PUBDATE,
 	LIST_MODDATE,
@@ -52,14 +53,15 @@ int db_add_item_to_store (void * store, UNUSED int colc, char ** colv,
 
 	gtk_list_store_append(GTK_LIST_STORE(store), &i);
 	gtk_list_store_set(GTK_LIST_STORE(store), &i,
-			LIST_ID, 		colv[0],
-			LIST_TITLE, 	colv[1],
-			LIST_SERIES, 	colv[2],
-			LIST_PUBDATE, 	colv[3],
-			LIST_MODDATE, 	colv[4],
-			LIST_EPUB, 		colv[5],
-			LIST_MOBI, 		colv[6],
-			LIST_PDF, 		colv[7],
+			LIST_ID, 		colv[LIST_ID],
+			LIST_TITLE, 	colv[LIST_TITLE],
+			LIST_AUTHOR, 	colv[LIST_AUTHOR],
+			LIST_SERIES, 	colv[LIST_SERIES],
+			LIST_PUBDATE, 	colv[LIST_PUBDATE],
+			LIST_MODDATE, 	colv[LIST_MODDATE],
+			LIST_EPUB, 		colv[LIST_EPUB],
+			LIST_MOBI, 		colv[LIST_MOBI],
+			LIST_PDF, 		colv[LIST_PDF],
 			-1);
 
 	return 0;
@@ -150,7 +152,6 @@ int remove_book (sqlite3 * db, char * ID)
 	char query[1300]; // TODO: remove magic numbers
 
 	sprintf(query, "DELETE FROM Books WHERE Id = %s;", ID);
-	printf("%s\n", query);
 	status = sqlite3_exec(db, query, 0, 0, &error_msg);
 
 	if (status != SQLITE_OK) {
@@ -176,10 +177,10 @@ static void activate (GtkApplication * app, gpointer user_data)
 	char * error_msg = NULL;
 	int status;
 
-	store = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+	store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING,
 			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-			G_TYPE_STRING);
-
+			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	
 	status = sqlite3_exec(db, "SELECT * FROM Books", db_add_item_to_store,
 			store, &error_msg);
 
@@ -194,48 +195,48 @@ static void activate (GtkApplication * app, gpointer user_data)
 	/* Create column with cell renderer */
 	// TODO: Use a function/loop for this
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("ID", renderer, "text",
-			0, NULL);
+	column = gtk_tree_view_column_new_with_attributes("ID", renderer,
+			"text", LIST_ID, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Title", renderer, "text",
-			0, NULL);
+	column = gtk_tree_view_column_new_with_attributes("Title", renderer,
+			"text", LIST_TITLE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Author", renderer, "text",
-			0, NULL);
+	column = gtk_tree_view_column_new_with_attributes("Author", renderer,
+			"text", LIST_AUTHOR, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Series", renderer, "text",
-			0, NULL);
+	column = gtk_tree_view_column_new_with_attributes("Series", renderer,
+			"text", LIST_SERIES, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes("Publish Date", renderer,
-			"text", 0, NULL);
+			"text", LIST_PUBDATE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes("Modify Date", renderer,
-			"text", 0, NULL);
+			"text", LIST_MODDATE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes("EPUB File", renderer,
-			"text", 0, NULL);
+			"text", LIST_EPUB, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes("MOBI File", renderer,
-			"text", 0, NULL);
+			"text", LIST_MOBI, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes("PDF File", renderer,
-			"text", 0, NULL);
+			"text", LIST_PDF, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
@@ -354,8 +355,8 @@ int main (int argc, char * argv[])
 
 	GtkApplication * app;
 	app = gtk_application_new("com.github.sams96.uelp", G_APPLICATION_FLAGS_NONE);
-	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-	status = g_application_run(G_APPLICATION(app), argc, argv);
+	g_signal_connect(app, "activate", G_CALLBACK(activate), db);
+	status = g_application_run(G_APPLICATION(app), 0, NULL);
 	g_object_unref(app);
 
 quit:
