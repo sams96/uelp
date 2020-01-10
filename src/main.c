@@ -247,7 +247,7 @@ static void activate (GtkApplication * app, gpointer user_data)
 	gtk_window_set_default_size(GTK_WINDOW(window), 960, 720);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), FALSE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), TRUE);
 
 	box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(box), list, TRUE, TRUE, 5);
