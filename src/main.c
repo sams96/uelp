@@ -43,6 +43,9 @@ enum {
 	N_COLUMNS
 };
 
+const char * const col_titles[] = {"ID", "Title", "Author", "Series",
+	"Publish Date", "Modify Date", "EPUB File", "MOBI File", "PDF File"};
+
 /*
  * SQLite callback function to add items to gtk store
  */
@@ -195,49 +198,11 @@ static void activate (GtkApplication * app, gpointer user_data)
 	/* Create column with cell renderer */
 	// TODO: Use a function/loop for this
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("ID", renderer,
-			"text", LIST_ID, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Title", renderer,
-			"text", LIST_TITLE, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Author", renderer,
-			"text", LIST_AUTHOR, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Series", renderer,
-			"text", LIST_SERIES, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Publish Date", renderer,
-			"text", LIST_PUBDATE, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Modify Date", renderer,
-			"text", LIST_MODDATE, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("EPUB File", renderer,
-			"text", LIST_EPUB, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("MOBI File", renderer,
-			"text", LIST_MOBI, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("PDF File", renderer,
-			"text", LIST_PDF, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+	for (int i = 0; i < N_COLUMNS; i++) {
+		column = gtk_tree_view_column_new_with_attributes(col_titles[i],
+				renderer, "text", i, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+	}
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
 
