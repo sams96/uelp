@@ -79,6 +79,7 @@ static inline void print_help (void)
 			"Options:\n"
 			"\t-a,\t--add\t\tAdd the given file to the database\n"
 			"\t-r,\t--remove\tRemove book with the given ID\n"
+			"\t-p,\t--print\tPrint the DB to console\n"
 			"\t-d,\t--database\tUse a different database file\n"
 			"\t-V,\t--version\tDisplay program version\n"
 			"\t-h,\t--help\t\tDisplay this message\n",
