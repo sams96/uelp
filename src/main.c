@@ -130,8 +130,8 @@ int add_book (sqlite3 * db, book_t * book)
 	char query[1300]; // TODO: remove magic numbers
 
 	sprintf(query,
-			"INSERT INTO Books (title, author, series, publishdate, modifydate, "
-				"epubfile, mobifile, pdffile)"
+			"INSERT INTO Books (title, author, series, publishdate, "
+				"modifydate, epubfile, mobifile, pdffile)"
 				"Values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 			book->title, book->author, book->series, book->publishdate,
 			book->modifydate, book->epubfile, book->mobifile, book->pdffile);
@@ -139,10 +139,42 @@ int add_book (sqlite3 * db, book_t * book)
 	status = sqlite3_exec(db, query, 0, 0, &error_msg);
 
 	if (status != SQLITE_OK) {
-		fprintf(stderr, "Cannot add to database, SQL error: %s\n", error_msg);
+		fprintf(stderr, "Cannot add %s to database, SQL error: %s\n",
+				book->title, error_msg);
 		sqlite3_free(error_msg);
 	}
 
+	return status;
+}
+
+/*
+ * Add a book to the db via the GUI
+ */
+static int add_book_callback (gpointer user_data)
+{
+	int status = 0;
+	GtkWidget * dialog;
+	GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+	gint res;
+
+	dialog = gtk_file_chooser_dialog_new("Open File",
+			NULL, // TODO: replace null with parent window widget
+			action,
+			"Cancel", GTK_RESPONSE_CANCEL,
+			"Open", GTK_RESPONSE_ACCEPT,
+			NULL);
+
+	res = gtk_dialog_run(GTK_DIALOG(dialog));
+	if (res == GTK_RESPONSE_ACCEPT) {
+		char * filename;
+		GtkFileChooser * chooser = GTK_FILE_CHOOSER(dialog);
+		filename = gtk_file_chooser_get_filename(chooser);
+		book_t * bk = get_epub_metadata(filename);
+		status = add_book((sqlite3 *) user_data, bk);
+		g_free(filename);
+	}
+
+	gtk_widget_destroy(dialog);
 	return status;
 }
 
@@ -178,9 +210,25 @@ static void activate (GtkApplication * app, gpointer user_data)
 	GtkWidget * box;
 	GtkListStore * store;
 
+	GtkWidget * toolbar;
+	GtkToolItem * add;
+	GtkWidget * add_icon;
+
 	char * error_msg = NULL;
 	int status;
 
+	/* Toolbar */
+	toolbar = gtk_toolbar_new();
+	gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
+
+	add_icon = gtk_image_new_from_icon_name("list-add",
+			GTK_ICON_SIZE_SMALL_TOOLBAR);
+	add = gtk_tool_button_new(add_icon, "add");
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), add, -1);
+	g_signal_connect(G_OBJECT(add), "clicked", G_CALLBACK(add_book_callback),
+			db);
+
+	/* List */
 	store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING,
 			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
 			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -216,6 +264,7 @@ static void activate (GtkApplication * app, gpointer user_data)
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(list), TRUE);
 
 	box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_box_pack_start(GTK_BOX(box), toolbar, FALSE, FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(box), list, TRUE, TRUE, 5);
 	gtk_container_add(GTK_CONTAINER(window), box);
 
@@ -320,7 +369,8 @@ int main (int argc, char * argv[])
 	if (print_the_db) print_db(db);
 
 	GtkApplication * app;
-	app = gtk_application_new("com.github.sams96.uelp", G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new("com.github.sams96.uelp",
+			G_APPLICATION_FLAGS_NONE);
 	g_signal_connect(app, "activate", G_CALLBACK(activate), db);
 	status = g_application_run(G_APPLICATION(app), 0, NULL);
 	g_object_unref(app);
