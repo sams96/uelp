@@ -150,7 +150,7 @@ int add_book (sqlite3 * db, book_t * book)
 /*
  * Add a book to the db via the GUI
  */
-static int add_book_callback (gpointer user_data)
+static int add_book_callback (UNUSED GtkToolItem * add, gpointer user_data)
 {
 	int status = 0;
 	GtkWidget * dialog;
