@@ -171,6 +171,18 @@ static int add_book_callback (gpointer user_data)
 		filename = gtk_file_chooser_get_filename(chooser);
 		book_t * bk = get_epub_metadata(filename);
 		status = add_book((sqlite3 *) user_data, bk);
+
+		if (status != 0) {
+			GtkWidget * err_dialog = gtk_message_dialog_new(GTK_WINDOW(dialog),
+					GTK_DIALOG_DESTROY_WITH_PARENT,
+					GTK_MESSAGE_WARNING,
+					GTK_BUTTONS_OK,
+					"Error adding %s",
+					filename);
+			gtk_dialog_run(GTK_DIALOG(err_dialog));
+			gtk_widget_destroy(err_dialog);
+		}
+
 		g_free(filename);
 	}
 
