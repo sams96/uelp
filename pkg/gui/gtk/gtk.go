@@ -7,16 +7,18 @@ import (
 const WindowName = "window"
 const UIMain = "pkg/gui/gtk/glade/main.glade"
 
-func Run(args *[]string) {
+func Run(args *[]string, l *log.Logger) error {
 	gtk.Init(args)
 	bldr, err := getBuilder(UIMain)
 	if err != nil {
-		panic(err)
+		l.Println(err)
+		return err
 	}
 
 	window, err := getWindow(bldr)
 	if err != nil {
-		panic(err)
+		l.Println(err)
+		return err
 	}
 
 	window.SetTitle("uelp")
@@ -25,12 +27,14 @@ func Run(args *[]string) {
 		gtk.MainQuit()
 	})
 	if err != nil {
-		panic(err)
+		l.Println(err)
+		return err
 	}
 
 	window.ShowAll()
 
 	gtk.Main()
+	return nil
 }
 
 func getBuilder(filename string) (*gtk.Builder, error) {
