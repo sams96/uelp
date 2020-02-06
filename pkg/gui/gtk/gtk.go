@@ -19,9 +19,12 @@ package gtk
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"log"
 )
 
 const WindowName = "window"
+const BoxName = "box"
+const ToolbarName = "toolbar"
 const UIMain = "pkg/gui/gtk/glade/main.glade"
 
 func Run(args *[]string, l *log.Logger) error {
@@ -70,6 +73,7 @@ func getBuilder(filename string) (*gtk.Builder, error) {
 	return b, nil
 }
 
+// TODO: Take object names as parameters
 func getWindow(b *gtk.Builder) (*gtk.Window, error) {
 	obj, err := b.GetObject(WindowName)
 	if err != nil {
@@ -78,8 +82,37 @@ func getWindow(b *gtk.Builder) (*gtk.Window, error) {
 
 	window, ok := obj.(*gtk.Window)
 	if !ok {
+		// TODO: return proper errors here
 		return nil, err
 	}
 
 	return window, nil
+}
+
+func getBox(b *gtk.Builder) (*gtk.Box, error) {
+	obj, err := b.GetObject(BoxName)
+	if err != nil {
+		return nil, err
+	}
+
+	box, ok := obj.(*gtk.Box)
+	if !ok {
+		return nil, err
+	}
+
+	return box, nil
+}
+
+func getToolbar(b *gtk.Builder) (*gtk.Toolbar, error) {
+	obj, err := b.GetObject(ToolbarName)
+	if err != nil {
+		return nil, err
+	}
+
+	box, ok := obj.(*gtk.Toolbar)
+	if !ok {
+		return nil, err
+	}
+
+	return box, nil
 }
