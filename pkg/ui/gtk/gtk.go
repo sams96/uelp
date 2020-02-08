@@ -25,6 +25,7 @@ import (
 const WindowName = "window"
 const BoxName = "box"
 const ToolbarName = "toolbar"
+const ListBoxName = "listbox"
 const UIMain = "pkg/ui/gtk/glade/main.glade"
 
 func Run(args *[]string, l *log.Logger) error {
@@ -52,6 +53,11 @@ func Run(args *[]string, l *log.Logger) error {
 	}
 
 	window.ShowAll()
+
+	err = loadList(bldr, []string{"this", "is", "a", "list"})
+	if err != nil {
+		return err
+	}
 
 	gtk.Main()
 	return nil
@@ -115,4 +121,46 @@ func getToolbar(b *gtk.Builder) (*gtk.Toolbar, error) {
 	}
 
 	return box, nil
+}
+
+func getListbox(b *gtk.Builder) (*gtk.ListBox, error) {
+	obj, err := b.GetObject(ListBoxName)
+	if err != nil {
+		return nil, err
+	}
+
+	box, ok := obj.(*gtk.ListBox)
+	if !ok {
+		return nil, err
+	}
+
+	return box, nil
+}
+
+func loadList(b *gtk.Builder, data []string) error {
+	lb, err := getListbox(b)
+	if err != nil {
+		return err
+	}
+
+	for i, el := range data {
+		lbl, err := gtk.LabelNew(el)
+		if err != nil {
+			return err
+		}
+
+		lbl.SetXAlign(0)
+		lbl.SetMarginStart(5)
+		row, err := gtk.ListBoxRowNew()
+		if err != nil {
+			return err
+		}
+
+		row.Add(lbl)
+		lb.Insert(row, i)
+	}
+
+	lb.ShowAll()
+
+	return nil
 }

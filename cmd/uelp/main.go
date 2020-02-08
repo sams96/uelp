@@ -18,13 +18,24 @@
 package main
 
 import (
+	"encoding/json"
+	"github.com/sams96/uelp/pkg/adding"
+	"github.com/sams96/uelp/pkg/storage/json"
 	"github.com/sams96/uelp/pkg/ui/gtk"
+	"github.com/sdomino/scribble"
 	"log"
 	"os"
 )
 
 func main() {
 	l := log.New(os.Stderr, "", log.LstdFlags|log.Lshortfile)
+
+	s := json.NewStorage("./")
+	adder := adding.NewService(s)
+
+	for _, name := range []string{"book one", "book two", "book three"} {
+		adder.AddBook(types.Book{Name: name, Author: "author"})
+	}
 
 	gtk.Run(&os.Args, l)
 }
