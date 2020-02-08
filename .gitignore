@@ -29,8 +29,6 @@
 *.dylib
 
 # Executables
-uelp
-uelp-test
 *.exe
 *.out
 *.app
@@ -44,15 +42,6 @@ uelp-test
 *.idb
 *.pdb
 vgcore.*
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
 
 # Database files
 *.db
