@@ -18,7 +18,7 @@
 package main
 
 import (
-	"github.com/sams96/uelp/pkg/gui/gtk"
+	"github.com/sams96/uelp/pkg/ui/gtk"
 	"log"
 	"os"
 )

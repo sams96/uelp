@@ -25,7 +25,7 @@ import (
 const WindowName = "window"
 const BoxName = "box"
 const ToolbarName = "toolbar"
-const UIMain = "pkg/gui/gtk/glade/main.glade"
+const UIMain = "pkg/ui/gtk/glade/main.glade"
 
 func Run(args *[]string, l *log.Logger) error {
 	gtk.Init(args)
